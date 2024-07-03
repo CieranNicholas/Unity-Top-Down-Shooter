@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -17,6 +13,9 @@ public class PlayerMovement : MonoBehaviour
     
     [Header("Movement Settings")]
     [SerializeField] private float MovementSpeed = 5f;
+    [SerializeField] private float Gravity = 9.81f;
+
+    [Header("Info")] private float verticalVelocity;
 
     private void Awake()
     {
@@ -33,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        Move();
+        ApplyMovement();
     }
 
     private void OnEnable()
@@ -46,12 +45,26 @@ public class PlayerMovement : MonoBehaviour
         playerControls.Disable();
     }
 
-    private void Move()
+    private void ApplyMovement()
     {
         movementDirection = new Vector3(moveInput.x, 0f, moveInput.y);
+        ApplyGravity();
         if (movementDirection.magnitude > 0)
         {
             controller.Move(movementDirection * (MovementSpeed * Time.deltaTime));
+        }
+    }
+
+    private void ApplyGravity()
+    {
+        if (!controller.isGrounded)
+        {
+            verticalVelocity -= Gravity * Time.deltaTime;
+            movementDirection.y = verticalVelocity;
+        }
+        else
+        {
+            verticalVelocity = -.5f;
         }
     }
 }
