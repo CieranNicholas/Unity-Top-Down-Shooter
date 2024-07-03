@@ -14,8 +14,14 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float MovementSpeed = 5f;
     [SerializeField] private float Gravity = 9.81f;
+    
+    [Header("Aim Settings")]
+    [SerializeField] private LayerMask aimLayerMask;
+    private Vector3 aimDirection;
+    [SerializeField] private Transform aimReticleGO;
 
-    [Header("Info")] private float verticalVelocity;
+    [Header("Info")] 
+    private float verticalVelocity;
 
     private void Awake()
     {
@@ -33,6 +39,24 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         ApplyMovement();
+
+        RotateTowardsMousePosition();
+    }
+
+    private void RotateTowardsMousePosition()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(aimInput);
+
+        if (Physics.Raycast(ray, out var hit, Mathf.Infinity, aimLayerMask))
+        {
+            aimDirection = hit.point - transform.position;
+            aimDirection.y = 0f;
+            aimDirection.Normalize();
+            
+            transform.forward = aimDirection;
+
+            aimReticleGO.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+        }
     }
 
     private void OnEnable()
