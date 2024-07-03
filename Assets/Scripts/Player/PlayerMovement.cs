@@ -5,6 +5,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Components")]
     private IA_PlayerControls playerControls;
     private CharacterController controller;
+    private Animator animator;
 
     [Header("Player Inputs")]
     private Vector2 moveInput;
@@ -28,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
         playerControls = new IA_PlayerControls();
         
         controller = GetComponent<CharacterController>();
+        animator = GetComponentInChildren<Animator>();
 
         playerControls.Character.Movement.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         playerControls.Character.Movement.canceled += ctx => moveInput = Vector2.zero;
@@ -39,8 +41,17 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         ApplyMovement();
-
         RotateTowardsMousePosition();
+        AnimtorControllers();
+    }
+
+    private void AnimtorControllers()
+    {
+        float xVelocity = Vector3.Dot(movementDirection.normalized, transform.right);
+        float zVelocity = Vector3.Dot(movementDirection.normalized, transform.forward);
+        
+        animator.SetFloat("xVelocity", xVelocity, .1f, Time.deltaTime);
+        animator.SetFloat("zVelocity", zVelocity, .1f, Time.deltaTime);
     }
 
     private void RotateTowardsMousePosition()
