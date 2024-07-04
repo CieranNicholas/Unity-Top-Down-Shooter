@@ -297,6 +297,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MovementSpeed: 1.5
+  SprintSpeed: 3
   Gravity: 9.81
   aimLayerMask:
     serializedVersion: 2

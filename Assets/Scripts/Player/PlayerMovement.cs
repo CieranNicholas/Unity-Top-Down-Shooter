@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     
     [Header("Movement Settings")]
     [SerializeField] private float MovementSpeed = 5f;
+    [SerializeField] private float SprintSpeed = 10f;
     [SerializeField] private float Gravity = 9.81f;
     
     [Header("Aim Settings")]
@@ -23,8 +24,16 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Info")] 
     private float verticalVelocity;
+    private float currentSpeed;
+    private bool bIsSprinting;
 
     private void Awake()
+    {
+        InputEvents();
+        currentSpeed = MovementSpeed;
+    }
+
+    private void InputEvents()
     {
         playerControls = new IA_PlayerControls();
         
@@ -36,6 +45,17 @@ public class PlayerMovement : MonoBehaviour
         
         playerControls.Character.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
         playerControls.Character.Aim.canceled += ctx => aimInput = Vector2.zero;
+
+        playerControls.Character.Sprint.performed += ctx =>
+        {
+            currentSpeed = SprintSpeed;
+            bIsSprinting = true;
+        };
+        playerControls.Character.Sprint.canceled += ctx =>
+        {
+            currentSpeed = MovementSpeed;
+            bIsSprinting = false;
+        };
     }
 
     private void Update()
@@ -52,6 +72,10 @@ public class PlayerMovement : MonoBehaviour
         
         animator.SetFloat("xVelocity", xVelocity, .1f, Time.deltaTime);
         animator.SetFloat("zVelocity", zVelocity, .1f, Time.deltaTime);
+        
+        var playRunAnimation = bIsSprinting && movementDirection.magnitude > 0;
+        
+        animator.SetBool("bIsSprinting", playRunAnimation);
     }
 
     private void RotateTowardsMousePosition()
@@ -86,7 +110,7 @@ public class PlayerMovement : MonoBehaviour
         ApplyGravity();
         if (movementDirection.magnitude > 0)
         {
-            controller.Move(movementDirection * (MovementSpeed * Time.deltaTime));
+            controller.Move(movementDirection * (currentSpeed * Time.deltaTime));
         }
     }
 
