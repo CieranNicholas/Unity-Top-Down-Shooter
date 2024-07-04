@@ -33,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
         currentSpeed = MovementSpeed;
     }
 
+    // Move into seperate input class
     private void InputEvents()
     {
         playerControls = new IA_PlayerControls();
@@ -56,6 +57,8 @@ public class PlayerMovement : MonoBehaviour
             currentSpeed = MovementSpeed;
             bIsSprinting = false;
         };
+        
+        playerControls.Character.Fire.performed += ctx => FireWeapon();
     }
 
     private void Update()
@@ -63,6 +66,12 @@ public class PlayerMovement : MonoBehaviour
         ApplyMovement();
         RotateTowardsMousePosition();
         AnimtorControllers();
+    }
+
+    // Temp method until I have a weapon system
+    private void FireWeapon()
+    {
+        animator.SetTrigger("Fire");
     }
 
     private void AnimtorControllers()
